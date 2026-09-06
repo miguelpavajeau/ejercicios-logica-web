@@ -196,7 +196,10 @@
     h += '</div>';
     h += '<div class="term">';
     h += '<div class="term-bar"><span class="dot r"></span><span class="dot y"></span>' +
-      '<span class="dot g"></span><span class="term-title">salida del programa</span></div>';
+      '<span class="dot g"></span><span class="term-title">salida del programa</span>' +
+      (ex.inputs && ex.inputs.length
+        ? '<span class="term-legend"><i></i>lo que ingresaste</span>' : '') +
+      '</div>';
     h += '<pre class="term-body" id="termOut"></pre>';
     h += '</div>';
     h += '</section>';
@@ -261,11 +264,15 @@
     }
 
     var text = JLogic.runExercise(ex, values);
-    term.innerHTML = text.split('\n').map(function (line) {
+    var html = text.split('\n').map(function (line) {
       return /^(Exception in thread|\[error inesperado\]|\[salida truncada)/.test(line)
         ? '<span class="err">' + esc(line) + '</span>'
         : esc(line);
     }).join('\n');
+    /* Las marcas de eco se convierten en spans después de escapar el HTML. */
+    term.innerHTML = html
+      .split(JLogic.ECHO_OPEN).join('<span class="in">')
+      .split(JLogic.ECHO_CLOSE).join('</span>');
     term.scrollTop = 0;
   }
 

@@ -590,10 +590,9 @@
       }
       out.print('Ingrese un número entero: ');
       if (sc.hasNextInt('numero')) {
-        out.println();
         verificarTerminacion(sc.nextInt('numero'));
       } else {
-        out.println();
+        sc.next('numero'); // scanner.next() del original: consume el token que no era entero
         out.println('El valor ingresado no es un número entero. Por favor, intente nuevamente.');
         out.println('[el programa original volvería a preguntar aquí]');
       }

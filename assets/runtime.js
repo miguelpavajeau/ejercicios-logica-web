@@ -30,6 +30,11 @@
   /* Señal interna: corta los bucles que producirían salida infinita. */
   function OutputLimit() {}
 
+  /* Marcas que envuelven el eco de la entrada del usuario. La consola las
+     convierte en <span class="in">. Ningún programa las produce. */
+  var ECHO_OPEN = String.fromCharCode(1);
+  var ECHO_CLOSE = String.fromCharCode(2);
+
   /* ------------------------------------------------------------------ *
    * System.out
    * ------------------------------------------------------------------ */
@@ -105,18 +110,27 @@
   var INT_RE = /^[+-]?\d+$/;
   var DBL_RE = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/;
 
-  function Scanner(values) {
+  function Scanner(values, out) {
     this.v = values || {};
+    this.out = out || null;
+    this._q = {};
   }
   Scanner.prototype.raw = function (name) {
     var x = this.v[name];
     return x === undefined || x === null ? '' : String(x);
+  };
+  /* La terminal hace eco de lo que el usuario teclea, así que el valor
+     aparece en la consola aunque el programa nunca lo imprima. El formulario
+     web no lo hace solo: esto lo reproduce. */
+  Scanner.prototype.echo = function (text) {
+    if (this.out && text !== '') this.out._push(ECHO_OPEN + text + ECHO_CLOSE + '\n');
   };
   Scanner.prototype.hasNextInt = function (name) {
     return INT_RE.test(this.raw(name).trim());
   };
   Scanner.prototype.nextInt = function (name) {
     var raw = this.raw(name).trim();
+    this.echo(raw);
     if (!INT_RE.test(raw)) throw InputMismatchException();
     var n = parseInt(raw, 10);
     if (n > 2147483647 || n < -2147483648) throw InputMismatchException();
@@ -124,37 +138,72 @@
   };
   Scanner.prototype.nextDouble = function (name) {
     var raw = this.raw(name).trim().replace(',', '.');
+    this.echo(raw);
     if (!DBL_RE.test(raw)) throw InputMismatchException();
     return parseFloat(raw);
   };
   Scanner.prototype.next = function (name) {
-    var t = this.raw(name).trim().split(/\s+/);
-    return t[0] || '';
+    var t = this.raw(name).trim().split(/\s+/)[0] || '';
+    this.echo(t);
+    return t;
   };
   Scanner.prototype.nextLine = function (name) {
-    return this.raw(name);
+    var s = this.raw(name);
+    this.echo(s);
+    return s;
   };
   /* Integer.parseInt(reader.readLine()) — lanza NumberFormatException */
   Scanner.prototype.parseInt = function (name) {
     var raw = this.raw(name).trim();
+    this.echo(raw);
     if (!INT_RE.test(raw)) throw NumberFormatException(raw);
     return parseInt(raw, 10);
   };
-  /* Lista de enteros separados por espacios, comas o saltos de línea. */
-  Scanner.prototype.ints = function (name) {
-    var toks = this.raw(name).trim().split(/[\s,]+/).filter(Boolean);
-    return toks.map(function (t) {
-      if (!INT_RE.test(t)) throw InputMismatchException();
-      return parseInt(t, 10);
-    });
+  /* Cola de tokens de un mismo campo, para los programas que piden varios
+     valores seguidos dentro de un bucle. */
+  Scanner.prototype._tokens = function (name) {
+    if (!this._q[name]) {
+      this._q[name] = this.raw(name).trim().split(/[\s,]+/).filter(Boolean);
+    }
+    return this._q[name];
+  };
+  Scanner.prototype.nextFrom = function (name) {
+    var q = this._tokens(name);
+    if (!q.length) throw new JavaError('java.util.NoSuchElementException');
+    var t = q.shift();
+    this.echo(t);
+    return t;
+  };
+  Scanner.prototype.nextIntFrom = function (name) {
+    var t = this.nextFrom(name);
+    if (!INT_RE.test(t)) throw InputMismatchException();
+    return parseInt(t, 10);
+  };
+  /* Igual que nextFrom, pero consume una línea completa: así el eco se ve
+     como la escribirías en la terminal y no partida token a token. */
+  Scanner.prototype.nextLineFrom = function (name) {
+    var key = name + '\n';
+    if (!this._q[key]) {
+      this._q[key] = this.raw(name).split(/\r?\n/).filter(function (s) {
+        return s.trim().length > 0;
+      });
+    }
+    var q = this._q[key];
+    if (!q.length) throw new JavaError('java.util.NoSuchElementException');
+    var line = q.shift();
+    this.echo(line.trim());
+    return line;
   };
   /* Líneas no vacías, para las entradas tipo HackerRank. */
   Scanner.prototype.textLines = function (name) {
-    return this.raw(name).split(/\r?\n/).map(function (s) {
+    var self = this;
+    var lines = this.raw(name).split(/\r?\n/).map(function (s) {
       return s.trim();
     }).filter(function (s) {
       return s.length > 0;
     });
+    lines.forEach(function (l) { self.echo(l); });
+    return lines;
   };
 
   /* ------------------------------------------------------------------ *
@@ -197,7 +246,7 @@
 
   function runExercise(ex, values) {
     var out = new Out();
-    var sc = new Scanner(values);
+    var sc = new Scanner(values, out);
     try {
       ex.run(out, sc, J);
     } catch (e) {
@@ -225,7 +274,9 @@
     CATALOG: CATALOG,
     reg: reg,
     runExercise: runExercise,
-    MAX_LINES: MAX_LINES
+    MAX_LINES: MAX_LINES,
+    ECHO_OPEN: ECHO_OPEN,
+    ECHO_CLOSE: ECHO_CLOSE
   };
   g.reg = reg;
 })(window);

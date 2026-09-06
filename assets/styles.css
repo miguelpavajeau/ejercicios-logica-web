@@ -528,6 +528,23 @@ a { color: var(--accent); }
   tab-size: 4;
 }
 .term-body .err { color: #ff8b7d; }
+/* Eco de lo que el usuario escribió, como lo mostraría una terminal real. */
+.term-body .in { color: #6fd1a0; }
+
+.term-legend {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 11.5px var(--mono);
+  color: #7c839c;
+}
+.term-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: #6fd1a0;
+}
 
 /* ---- Código ---- */
 .file-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }

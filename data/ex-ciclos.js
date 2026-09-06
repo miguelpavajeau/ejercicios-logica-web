@@ -234,7 +234,6 @@
       out.println('10. Leer un número entero y determinar a cuánto es igual la suma de todos los enteros\ncomprendidos entre 1 y el número leído.');
       out.print('Ingrese un número entero: ');
       var num = sc.nextInt('num');
-      out.println();
       var sum = 0;
       for (var i = 1; i <= num; i++) sum += i;
       out.println('La suma de todos los enteros comprendidos entre 1 y ' + num + ' es: ' + sum);
@@ -251,7 +250,6 @@
       out.println('11. . Leer un número entero de dos dígitos y mostrar en pantalla todos los enteros comprendidos\nentre un dígito y otro.');
       out.print('Ingrese un número entero de dos dígitos: ');
       var entero = sc.nextInt('e');
-      out.println();
       var enteroUnidad = J.imod(entero, 10);
       var enteroDecima = J.idiv(entero, 10);
       if (entero < 100 && entero > 9) {
@@ -277,7 +275,6 @@
       out.println('12. Leer un número entero de 3 dígitos y determinar si tiene el dígito 1.');
       out.print('Ingrese un número entero de tres dígitos: ');
       var entero = sc.nextInt('e');
-      out.println();
       var unidad = J.imod(entero, 10);
       var dos = J.idiv(entero, 10);
       var decima = J.imod(dos, 10);
@@ -302,7 +299,6 @@
       out.println('13. Leer un entero y mostrar todos los múltiplos de 5 comprendidos entre 1 y el número leído.');
       out.print('Ingrese un número entero: ');
       var entero = sc.nextInt('e');
-      out.println();
       if (entero > 0) {
         for (var i = 1; i <= entero; i++) {
           if (J.imod(i, 5) === 0) out.println(i);

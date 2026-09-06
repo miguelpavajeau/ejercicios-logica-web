@@ -197,22 +197,12 @@
       def: 'java 100\ncpp 65\npython 50'
     }],
     run: function (out, sc, J) {
-      var toks = sc.raw('datos').trim().split(/\s+/).filter(Boolean);
-      var p = 0;
-      function next() {
-        if (p >= toks.length) throw new JLogic.JavaError('java.util.NoSuchElementException');
-        return toks[p++];
-      }
-      function nextInt() {
-        var t = next();
-        if (!/^[+-]?\d+$/.test(t)) throw JLogic.InputMismatchException();
-        return parseInt(t, 10);
-      }
       out.println('================================');
       for (var i = 0; i < 3; i++) {
-        var s1 = next();
-        var x = nextInt();
-        out.printf('%-15s%03d%n', s1, x);
+        var t = sc.nextLineFrom('datos').trim().split(/\s+/);
+        var s1 = t[0];
+        if (!/^[+-]?\d+$/.test(t[1] || '')) throw JLogic.InputMismatchException();
+        out.printf('%-15s%03d%n', s1, parseInt(t[1], 10));
       }
       out.println('================================');
     }

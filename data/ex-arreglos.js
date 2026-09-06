@@ -4,12 +4,6 @@
   var CAT = 'arreglos';
   var DIR = 'C/EjerciciosArreglos/';
 
-  /* Emula quedarse sin datos de entrada, como haría Scanner en consola. */
-  function tomar(nums, i) {
-    if (i >= nums.length) throw new JLogic.JavaError('java.util.NoSuchElementException');
-    return nums[i];
-  }
-
   var DIEZ = { name: 'nums', label: '10 números enteros (separados por espacios o comas)', type: 'ints', count: 10, def: '3 9 12 7 25 4 18 2 30 11' };
 
   reg({
@@ -22,14 +16,12 @@
     run: function (out, sc, J) {
       out.println('1. Leer 10 enteros, almacenarlos en un vector y determinar en qué posición del vector está el \nmayor número leído.');
       out.println('Ingrese 10 número entero:');
-      var entrada = sc.ints('nums');
       var numeros = [];
       try {
         for (var i = 0; i < 10; i++) {
           out.printf('Introduzca número %d: ', i + 1);
-          numeros[i] = tomar(entrada, i);
+          numeros[i] = sc.nextIntFrom('nums');
         }
-        out.println();
         var numMayor = numeros[0];
         var posicion = 0;
         for (i = 0; i < numeros.length; i++) {
@@ -57,14 +49,12 @@
     run: function (out, sc, J) {
       out.println('2.Leer 10 enteros, almacenarlos en un vector y determinar en qué posición del vector está el \nmayor número par leído.');
       out.println('Ingrese 10 número entero:');
-      var entrada = sc.ints('nums');
       var numeros = [];
       try {
         for (var i = 0; i < 10; i++) {
           out.printf('Introduzca número %d: ', i + 1);
-          numeros[i] = tomar(entrada, i);
+          numeros[i] = sc.nextIntFrom('nums');
         }
-        out.println();
         var numMayor = 0;
         var posicion = 0;
         for (i = 0; i < numeros.length; i++) {
@@ -114,14 +104,12 @@
       }
       out.println('3.Leer 10 enteros, almacenarlos en un vector y determinar en qué posición del vector está el\nmayor número primo leído.');
       out.println('Ingrese 10 número entero:');
-      var entrada = sc.ints('nums');
       var numeros = [];
       try {
         for (var i = 0; i < 10; i++) {
           out.printf('Introduzca número %d: ', i + 1);
-          numeros[i] = tomar(entrada, i);
+          numeros[i] = sc.nextIntFrom('nums');
         }
-        out.println();
         findLargestPrime(numeros);
         out.println('El mayor número primo es: ' + findLargestPrime(numeros));
       } catch (e) {
